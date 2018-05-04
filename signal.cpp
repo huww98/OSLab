@@ -23,7 +23,7 @@ void handler(int signum)
 {
     for (auto &pid : childPids)
     {
-        kill(pid, SIGINT);
+        kill(pid, SIGUSR1);
     }
     wait(nullptr);
     throwIfError(lockf(STDERR_FILENO, F_LOCK, 0), "lockf failed");
@@ -51,8 +51,12 @@ pid_t childProcess()
     {
         struct sigaction act;
         act.sa_handler = childHandler<num>;
-        sigaction(SIGINT, &act, nullptr);
-        sigaction(SIGQUIT, &act, nullptr);
+        sigaction(SIGUSR1, &act, nullptr);
+        struct sigaction actign;
+        actign.sa_handler = SIG_IGN;
+        sigaction(SIGQUIT, &actign, nullptr);
+        sigaction(SIGINT, &actign, nullptr);
+        sigaction(SIGTERM, &actign, nullptr);
         pause();
         exit(0);
     }
