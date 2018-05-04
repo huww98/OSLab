@@ -26,7 +26,7 @@ void output(string msg)
 
 void childProcess(string msg)
 {
-    int pid = fork();
+    pid_t pid = fork();
     if (pid > 0)
     {
         return;
