@@ -6,14 +6,22 @@
 
 using namespace std;
 
+void throwIfError(int ret, string errorMessage)
+{
+    if (ret != 0)
+        throw new runtime_error(errorMessage);
+}
+
 void output(string msg)
 {
+    throwIfError(lockf(STDOUT_FILENO, F_LOCK, 0), "lockf failed");
     for (char c : msg)
     {
         cout << c << flush;
         this_thread::yield();
     }
     cout << endl;
+    throwIfError(lockf(STDOUT_FILENO, F_ULOCK, 0), "lockf unlock failed");
 }
 
 void childProcess(string msg)
